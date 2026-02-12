@@ -67,6 +67,14 @@ public class UsuarioView extends JFrame {
         
         gbc.gridwidth = 1;
         
+        gbc.gridx = 5;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.EAST;
+        btnEliminar = new JButton("Eliminar usuario");
+        btnEliminar.setBackground(new Color(255,100,100));
+        btnEliminar.setPreferredSize(new Dimension(200, 30));
+        panel.add(btnEliminar, gbc);
+        
         gbc.gridx = 6;
         gbc.gridy = 1;
         gbc.anchor = GridBagConstraints.EAST;
@@ -74,14 +82,6 @@ public class UsuarioView extends JFrame {
         btnFormulario.setBackground(new Color(171,239,255));
         btnFormulario.setPreferredSize(new Dimension(200, 30));
         panel.add(btnFormulario, gbc);
-        
-        gbc.gridx = 5;
-        gbc.gridy = 1;
-        gbc.anchor = GridBagConstraints.EAST;
-        btnEliminar = new JButton("Eliminar usuario");
-        btnEliminar.setBackground(new Color(255,100,100));
-        btnEliminar.setPreferredSize(new Dimension(0, 40));
-        panel.add(btnEliminar, gbc);
         
         gbc.gridx = 0;
         gbc.gridy = 2;
@@ -256,7 +256,7 @@ public class UsuarioView extends JFrame {
         }
         
         int id = Integer.parseInt(tablaUsuarios.getValueAt(filaSeleccionada, 0).toString());
-        String nombre = tablaUsuarios.getValueAt(filaSeleccionada, 1).toString();
+        String nombre = String.valueOf(tablaUsuarios.getValueAt(filaSeleccionada, 1));
         
         int respuesta = JOptionPane.showConfirmDialog(this, 
             "¿Seguro que quieres eliminar a " + nombre + "?", 
