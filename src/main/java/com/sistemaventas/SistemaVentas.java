@@ -10,7 +10,7 @@ import view.VentaView;
 public class SistemaVentas {
 
     public static void main(String[] args) {
-        /*LoginView login = new LoginView();
+         /*LoginView login = new LoginView();
         login.setVisible(true);*/
         
         UsuarioView usuario = new UsuarioView();

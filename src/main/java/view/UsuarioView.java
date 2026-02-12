@@ -91,7 +91,7 @@ public class UsuarioView extends JFrame {
         gbc.insets = new Insets(20, 10, 10, 10);
 
         // 1. Definir columnas
-        String[] columnas = {"N°", "Nombres", "Apellido paterno", "Apellido materno", "Rol", "Usuario", "Contraseña"};
+        String[] columnas = {"N°", "Nombres", "Apellido paterno", "Apellido materno", "Rol", "Usuario"};
          // 2. Modelo de datos (por ahora vacío)
         modelo = new DefaultTableModel(columnas, 0);
         // 3. Crear la tabla con el modelo
@@ -287,7 +287,6 @@ public class UsuarioView extends JFrame {
                 usuario.getApellidoMaterno(),
                 usuario.getRol(),
                 usuario.getUsername(),
-                usuario.getPassword()
             };
             modelo.addRow(fila);
         } 

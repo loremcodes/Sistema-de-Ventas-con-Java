@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import model.Usuario;
 import util.ConexionBD;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class UsuarioController {
     ConexionBD conexion = new ConexionBD();
@@ -24,7 +25,9 @@ public class UsuarioController {
             prepareStatement.setString(3, usuario.getApellidoMaterno());
             prepareStatement.setString(4, usuario.getRol());
             prepareStatement.setString(5, usuario.getUsername());
-            prepareStatement.setString(6, usuario.getPassword());
+            //encriptación de la contraseña que registra el usuario con BCrypt
+            String passwordHashed = BCrypt.hashpw(usuario.getPassword(), BCrypt.gensalt());
+            prepareStatement.setString(6, passwordHashed);
             
             int filasInsertadas = prepareStatement.executeUpdate();
             return filasInsertadas > 0;
@@ -64,7 +67,6 @@ public class UsuarioController {
                     usuario.setApellidoMaterno(resultset.getString("apellido_materno"));
                     usuario.setRol(resultset.getString("rol"));
                     usuario.setUsername(resultset.getString("username"));
-                    usuario.setPassword(resultset.getString("password")); 
                     
                     listaUsuarios.add(usuario);
                 }
