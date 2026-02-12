@@ -1,0 +1,15 @@
+view\ProductoView.class
+controller\VentaController.class
+model\Detalle_Venta.class
+model\Venta.class
+model\Producto.class
+util\ConexionBD.class
+model\Usuario.class
+com\sistemaventas\SistemaVentas.class
+view\UsuarioView.class
+view\LoginView.class
+controller\LoginController.class
+view\InicioView.class
+controller\UsuarioController.class
+view\VentaView.class
+controller\ProductoController.class
