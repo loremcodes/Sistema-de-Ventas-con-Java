@@ -5,8 +5,11 @@ model\Venta.class
 model\Producto.class
 util\ConexionBD.class
 model\Usuario.class
+view\CategoriaView.class
 com\sistemaventas\SistemaVentas.class
+controller\CategoriaController.class
 view\UsuarioView.class
+model\Categoria.class
 view\LoginView.class
 controller\LoginController.class
 view\InicioView.class

@@ -13,11 +13,11 @@ public class SistemaVentas {
          /*LoginView login = new LoginView();
         login.setVisible(true);*/
         
-        UsuarioView usuario = new UsuarioView();
-        usuario.setVisible(true);
+        /*UsuarioView usuario = new UsuarioView();
+        usuario.setVisible(true);*/
         
-        /*ProductoView producto = new ProductoView();
-        producto.setVisible(true);*/
+        ProductoView producto = new ProductoView();
+        producto.setVisible(true);
         
         /*VentaView venta = new VentaView();
         venta.setVisible(true);*/

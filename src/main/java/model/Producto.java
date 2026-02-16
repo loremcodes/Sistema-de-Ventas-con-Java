@@ -3,7 +3,8 @@ package model;
 
 public class Producto {
     private int id;
-    private String nombre, marca, descripcion, unidadMedida, categoria;
+    private String nombre, marca, descripcion, unidadMedida;
+    private Categoria categoria;
     private double precioCompra, precioVenta, stock;
     
     public Producto(){  }
@@ -16,7 +17,7 @@ public class Producto {
         this.precioCompra = precioCompra;
         this.precioVenta = precioVenta;
         this.stock = stock;
-        this.categoria = categoria;
+        //this.categoria = categoria;
     }
     
     public int getId(){ return id; }
@@ -27,7 +28,7 @@ public class Producto {
     public double getPrecioCompra(){ return precioCompra; }
     public double getPrecioVenta(){ return precioVenta; }
     public double getStock(){ return stock; }
-    public String getCategoria(){ return categoria; }
+    public Categoria getCategoria(){ return categoria; }
     
     public void setId(int id){ this.id = id; }
     public void setNombre(String nombre){ this.nombre = nombre; }
@@ -41,7 +42,7 @@ public class Producto {
         }
     }
     public void setStock(double stock){ this.stock = stock; }
-    public void setCategoria(String categoria){ this.categoria = categoria; }
+    public void setCategoria(Categoria categoria){ this.categoria = categoria; }
     
     
 }

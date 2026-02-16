@@ -1,5 +1,7 @@
 D:\Java Practice\SistemaVentas\src\main\java\util\ConexionBD.java
+D:\Java Practice\SistemaVentas\src\main\java\controller\CategoriaController.java
 D:\Java Practice\SistemaVentas\src\main\java\view\UsuarioView.java
+D:\Java Practice\SistemaVentas\src\main\java\view\CategoriaView.java
 D:\Java Practice\SistemaVentas\src\main\java\model\Venta.java
 D:\Java Practice\SistemaVentas\src\main\java\view\ProductoView.java
 D:\Java Practice\SistemaVentas\src\main\java\controller\UsuarioController.java
@@ -8,6 +10,7 @@ D:\Java Practice\SistemaVentas\src\main\java\com\sistemaventas\SistemaVentas.jav
 D:\Java Practice\SistemaVentas\src\main\java\model\Detalle_Venta.java
 D:\Java Practice\SistemaVentas\src\main\java\model\Usuario.java
 D:\Java Practice\SistemaVentas\src\main\java\controller\ProductoController.java
+D:\Java Practice\SistemaVentas\src\main\java\model\Categoria.java
 D:\Java Practice\SistemaVentas\src\main\java\view\LoginView.java
 D:\Java Practice\SistemaVentas\src\main\java\controller\LoginController.java
 D:\Java Practice\SistemaVentas\src\main\java\controller\VentaController.java

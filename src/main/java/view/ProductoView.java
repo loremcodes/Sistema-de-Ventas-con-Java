@@ -1,6 +1,7 @@
 
 package view;
 
+import controller.CategoriaController;
 import controller.ProductoController;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -9,9 +10,9 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -22,17 +23,20 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
+import model.Categoria;
 import model.Producto;
 
-public class ProductoView extends JFrame{
+public final class ProductoView extends JFrame{
    private JPanel panel, panelSecundario;
    private JLabel tituloPrincipal, tituloSecundario, lblnombre, lblmarca, lbldescripcion, lblprecioCompra, lblprecioVenta, lblstock, lblunidadMedida, lblcategoria;
-   private JTextField txtnombre, txtmarca, txtdescripcion, txtprecioCompra, txtprecioVenta, txtstock, txtunidadMedida, txtcategoria;
+   private JTextField txtnombre, txtmarca, txtdescripcion, txtprecioCompra, txtprecioVenta, txtstock, txtunidadMedida;
    private JButton btnFormulario, btnRegistrar, btnEliminar;
+   private JComboBox<Categoria> cbxCategoria;
    private DefaultTableModel modelo;
    private JTable tabla;  
    private JScrollPane scroll;
    private final ProductoController control;
+   private List<Producto> listaActual;
    
    public ProductoView(){
        control = new ProductoController();
@@ -111,7 +115,7 @@ public class ProductoView extends JFrame{
         gbc.gridy = 0;
         gbc.gridwidth = 3;
         gbc.insets = new Insets(30, 10, 30, 10); // margen 
-        tituloSecundario = new JLabel("Registrar producto");
+        tituloSecundario = new JLabel("Registrar nuevo producto");
         tituloSecundario.setFont(new Font("Inter", Font.BOLD, 20));
         panelSecundario.add(tituloSecundario, gbc);
        
@@ -203,26 +207,48 @@ public class ProductoView extends JFrame{
         
         gbc.gridx=1;
         gbc.gridy=6;
-        txtcategoria = new JTextField(15);
-        txtcategoria.setPreferredSize(new Dimension(0,30));
-        panelSecundario.add(txtcategoria, gbc);
+        cbxCategoria = new JComboBox<Categoria>();
+        cbxCategoria.setPreferredSize(new Dimension(200,30));
+        panelSecundario.add(cbxCategoria, gbc);
+        
         
         gbc.gridy=7;
         gbc.gridwidth=3;
         gbc.insets = new Insets(30, 10, 30, 10);
-        btnRegistrar = new JButton("Agregar producto");
+        btnRegistrar = new JButton("Registrar producto");
         btnRegistrar.setBackground(new Color(171,239,255));
         btnRegistrar.setPreferredSize(new Dimension(150, 30));
         panelSecundario.add(btnRegistrar, gbc);
         
+        llenarComboCategoria();
         
-        btnRegistrar.addActionListener(e -> ejecutarBtnAgregarProducto());
+        btnRegistrar.addActionListener(e -> ejecutarBtnRegistrar());
         this.add(panelSecundario, BorderLayout.NORTH);
         
         return panelSecundario;
    }
+   public void llenarComboCategoria(){
+        cbxCategoria.removeAllItems();
+        
+         if (cbxCategoria == null) {
+            System.err.println("Error: El JComboBox aún no ha sido inicializado.");
+            return; 
+        }
+        Categoria seleccion = new Categoria();
+        seleccion.setNombreCategoria("Seleccionar..."); 
+        seleccion.setId(0); 
+        
+        this.cbxCategoria.addItem(seleccion);
+
+        CategoriaController categoria = new CategoriaController();
+        List<Categoria> lista = categoria.visualizarLista();
+      
+        for(Categoria cat: lista){
+           cbxCategoria.addItem(cat);
+        }
+   }
    private void limpiarCampos(){
-       txtnombre.setText(""); txtmarca.setText(""); txtdescripcion.setText(""); txtprecioCompra.setText(""); txtprecioVenta.setText(""); txtstock.setText(""); txtunidadMedida.setText(""); txtcategoria.setText("");
+       txtnombre.setText(""); txtmarca.setText(""); txtdescripcion.setText(""); txtprecioCompra.setText(""); txtprecioVenta.setText(""); txtstock.setText(""); txtunidadMedida.setText("");
    }
    private void eventos(){
        btnFormulario.addActionListener(e -> {
@@ -234,10 +260,17 @@ public class ProductoView extends JFrame{
         dialogo.setVisible(true);
         ejecutarLista();
         });
-       btnEliminar.addActionListener(e -> ejecutarBtnEliminarProducto());
+       btnEliminar.addActionListener(e -> ejecutarBtnEliminar());
    }
-   private void ejecutarBtnAgregarProducto(){
+   private void ejecutarBtnRegistrar(){
+       Categoria categSeleccionada = (Categoria) cbxCategoria.getSelectedItem();
+       if(categSeleccionada == null || categSeleccionada.getId()==0){
+           JOptionPane.showMessageDialog(null, "Por favor, seleccione una categoría válida");
+           return; // Detiene la ejecución si no hay selección válida
+       }
+           
        Producto producto = new Producto();
+       
        producto.setNombre(txtnombre.getText());
        producto.setMarca(txtmarca.getText());
        producto.setDescripcion(txtdescripcion.getText());
@@ -245,46 +278,55 @@ public class ProductoView extends JFrame{
        producto.setPrecioCompra(Double.parseDouble(txtprecioCompra.getText()));
        producto.setPrecioVenta(Double.parseDouble(txtprecioVenta.getText()));
        producto.setStock(Double.parseDouble(txtstock.getText()));
-       producto.setCategoria(txtcategoria.getText());
+       producto.setCategoria(categSeleccionada);
        
        if(control.registrarProducto(producto)){
            JOptionPane.showMessageDialog(null, "Producto registrado");
            limpiarCampos();
        }else{
-           JOptionPane.showMessageDialog(null, "Error al registrar usuario");
+           JOptionPane.showMessageDialog(null, "Error al registrar producto");
+           
        }
    }
-   private void ejecutarBtnEliminarProducto(){
+   private void ejecutarBtnEliminar(){
        int filaSeleccionada = tabla.getSelectedRow();
         if (filaSeleccionada == -1) {
             JOptionPane.showMessageDialog(this, "Por favor, selecciona un usuario de la tabla para eliminar.");
             return;
         }
         
-        int id = Integer.parseInt(tabla.getValueAt(filaSeleccionada,0).toString());
+        if (this.listaActual == null || filaSeleccionada >= this.listaActual.size()) {
+            JOptionPane.showMessageDialog(this, "Error: La lista de datos no está sincronizada.");
+            ejecutarLista(); // Intentamos recargar para solucionar el problema
+            return;
+        }
+        int id = listaActual.get(filaSeleccionada).getId();
         
         int respuesta = JOptionPane.showConfirmDialog(this, 
             "¿Seguro que quieres eliminar el producto?", 
             "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
         
-        Producto producto = new Producto();
-        producto.setId(id);
         
-        if(respuesta==JOptionPane.YES_OPTION){
-            if(control.eliminarProducto(producto)){
-                JOptionPane.showMessageDialog(this, "Producto eliminado");
-                ejecutarLista();
+        if (respuesta == JOptionPane.YES_OPTION) {
+            Producto producto = new Producto();
+            producto.setId(id);
+
+            if (control.eliminarProducto(producto)) {
+                JOptionPane.showMessageDialog(this, "Producto eliminado correctamente");
+                ejecutarLista(); // Refresca la tabla y vuelve a generar los números 1, 2, 3...
+            } else {
+            JOptionPane.showMessageDialog(this, "Error al eliminar: El producto podría estar vinculado a una venta.");
             }
         }
-        
    }
    private void ejecutarLista(){
         modelo.setRowCount(0);
+        int item = 1;
+        this.listaActual = control.visualizarLista();
         
-        List<Producto> lista = control.visualizarLista();
-        for (Producto producto: lista) {
+        for (Producto producto: listaActual) {
             Object[] fila = {
-            producto.getId(),
+            item,
             producto.getNombre(),
             producto.getMarca(),
             producto.getDescripcion(),
@@ -292,9 +334,10 @@ public class ProductoView extends JFrame{
             producto.getPrecioCompra(),
             producto.getPrecioVenta(),
             producto.getStock(),
-            producto.getCategoria(), 
+            (producto.getCategoria() != null) ? producto.getCategoria().getNombreCategoria() : "Sin Categoría" 
             };
             modelo.addRow(fila);
+            item++;
         } 
    } 
 }
