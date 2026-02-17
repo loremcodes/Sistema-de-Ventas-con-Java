@@ -61,7 +61,7 @@ public final class ProductoView extends JFrame{
         gbc.gridx = 0; 
         gbc.gridy = 0; 
         gbc.gridwidth = 9;
-        gbc.insets = new Insets(20, 10, 20, 10); // margen 
+        gbc.insets = new Insets(20, 10, 20, 10);
         gbc.anchor = GridBagConstraints.CENTER;
         
         tituloPrincipal = new JLabel("Gestión de productos",SwingConstants.CENTER);
@@ -91,9 +91,8 @@ public final class ProductoView extends JFrame{
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.gridwidth = 9;
-        gbc.fill = GridBagConstraints.BOTH; // La tabla debe expandirse
+        gbc.fill = GridBagConstraints.BOTH;
         gbc.weighty = 1.0; 
-        
         String[] columnas = {"N°", "Nombre", "Marca", "Descripción", "Unidad de medida", "Precio compra", 
             "Precio venta", "Stock", "Categoría"};
         modelo = new DefaultTableModel(columnas,0);
@@ -110,11 +109,11 @@ public final class ProductoView extends JFrame{
              
         GridBagConstraints gbc = new GridBagConstraints(); 
         gbc.anchor = GridBagConstraints.CENTER;
-        
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 3;
         gbc.insets = new Insets(30, 10, 30, 10); // margen 
+        
         tituloSecundario = new JLabel("Registrar nuevo producto");
         tituloSecundario.setFont(new Font("Inter", Font.BOLD, 20));
         panelSecundario.add(tituloSecundario, gbc);
@@ -211,7 +210,6 @@ public final class ProductoView extends JFrame{
         cbxCategoria.setPreferredSize(new Dimension(200,30));
         panelSecundario.add(cbxCategoria, gbc);
         
-        
         gbc.gridy=7;
         gbc.gridwidth=3;
         gbc.insets = new Insets(30, 10, 30, 10);
@@ -290,6 +288,7 @@ public final class ProductoView extends JFrame{
    }
    private void ejecutarBtnEliminar(){
        int filaSeleccionada = tabla.getSelectedRow();
+       
         if (filaSeleccionada == -1) {
             JOptionPane.showMessageDialog(this, "Por favor, selecciona un usuario de la tabla para eliminar.");
             return;
@@ -300,12 +299,12 @@ public final class ProductoView extends JFrame{
             ejecutarLista(); // Intentamos recargar para solucionar el problema
             return;
         }
+        
         int id = listaActual.get(filaSeleccionada).getId();
         
         int respuesta = JOptionPane.showConfirmDialog(this, 
             "¿Seguro que quieres eliminar el producto?", 
             "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
-        
         
         if (respuesta == JOptionPane.YES_OPTION) {
             Producto producto = new Producto();
@@ -313,7 +312,7 @@ public final class ProductoView extends JFrame{
 
             if (control.eliminarProducto(producto)) {
                 JOptionPane.showMessageDialog(this, "Producto eliminado correctamente");
-                ejecutarLista(); // Refresca la tabla y vuelve a generar los números 1, 2, 3...
+                ejecutarLista();
             } else {
             JOptionPane.showMessageDialog(this, "Error al eliminar: El producto podría estar vinculado a una venta.");
             }

@@ -2,6 +2,7 @@
 package com.sistemaventas;
 
 import util.ConexionBD;
+import view.CategoriaView;
 import view.LoginView;
 import view.ProductoView;
 import view.UsuarioView;
@@ -16,7 +17,7 @@ public class SistemaVentas {
         /*UsuarioView usuario = new UsuarioView();
         usuario.setVisible(true);*/
         
-        ProductoView producto = new ProductoView();
+        CategoriaView producto = new CategoriaView();
         producto.setVisible(true);
         
         /*VentaView venta = new VentaView();

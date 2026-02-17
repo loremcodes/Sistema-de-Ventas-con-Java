@@ -13,12 +13,13 @@ import util.ConexionBD;
 public class CategoriaController {
     ConexionBD conexion = new ConexionBD();
     public boolean registrarCategoria(Categoria categoria){
-        String sql = "INSERT INTO categoriA(nombre_categoria) VALUES(?)";
+        String sql = "INSERT INTO categoria(nombre_categoria, descripcion) VALUES(?,?)";
         
         try(Connection connection =  conexion.establecer();
             PreparedStatement prepareStatement = connection.prepareStatement(sql)){
             
             prepareStatement.setString(1, categoria.getNombreCategoria());
+            prepareStatement.setString(2, categoria.getDescripcion());
             
             int filasInsertadas = prepareStatement.executeUpdate();
             return filasInsertadas > 0;
@@ -45,7 +46,7 @@ public class CategoriaController {
     }
     public List<Categoria> visualizarLista(){
         List<Categoria> listaCategorias = new ArrayList<>();
-        String sql = "SELECT *FROM categoria";
+        String sql = "SELECT * FROM categoria";
         
         try(Connection connection = conexion.establecer();
             PreparedStatement prepareStatement = connection.prepareStatement(sql);){
@@ -55,12 +56,14 @@ public class CategoriaController {
                 Categoria categoria = new Categoria();
                 categoria.setId(resultset.getInt("id_categoria"));
                 categoria.setNombreCategoria(resultset.getString("nombre_categoria"));
+                categoria.setDescripcion(resultset.getString("descripcion"));
                 
                 listaCategorias.add(categoria);
             }
             
         }catch(SQLException e){
             System.out.println("Error al obtener lista de categoria");
+            e.printStackTrace();
         }
         return listaCategorias;
         

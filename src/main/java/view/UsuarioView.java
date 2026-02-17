@@ -85,18 +85,17 @@ public class UsuarioView extends JFrame {
         
         gbc.gridx = 0;
         gbc.gridy = 2;
-        gbc.gridwidth = 7; // Ocupa el ancho total del formulario
-        gbc.fill = GridBagConstraints.BOTH; // La tabla debe expandirse
-        gbc.weighty = 1.0; // Le da prioridad para estirarse verticalmente
+        gbc.gridwidth = 7;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weighty = 1.0;
         gbc.insets = new Insets(20, 10, 10, 10);
 
-        // 1. Definir columnas
         String[] columnas = {"N°", "Nombres", "Apellido paterno", "Apellido materno", "Rol", "Usuario"};
-         // 2. Modelo de datos (por ahora vacío)
+
         modelo = new DefaultTableModel(columnas, 0);
-        // 3. Crear la tabla con el modelo
+
         tablaUsuarios = new JTable(modelo);
-        // 4. Meter la tabla en un scroll pane
+   
         scrollPane = new JScrollPane(tablaUsuarios);
         scrollPane.setPreferredSize(new Dimension(500, 200));
 
@@ -243,7 +242,7 @@ public class UsuarioView extends JFrame {
                 JOptionPane.showMessageDialog(null, "Usuario registrado");
                 limpiarCampos();
             }else{
-            JOptionPane.showMessageDialog(null, "Error al registrar usuario");
+             JOptionPane.showMessageDialog(null, "Error al registrar usuario");
             }
         }
        
