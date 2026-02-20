@@ -19,6 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 import model.Categoria;
 import model.Producto;
@@ -101,19 +102,23 @@ public class CategoriaView extends JFrame{
     public JPanel formularioAgregar(){
         panelFormulario = new JPanel();
         panelFormulario.setLayout(new GridBagLayout());
+        
         GridBagConstraints gbc = new GridBagConstraints(); 
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 3;
-        gbc.insets = new Insets(30, 10, 30, 10); // margen 
+        gbc.insets = new Insets(30, 50, 30, 50); // margen 
         
-        tituloFormulario = new JLabel("Registrar nueva caategoria");
+        tituloFormulario = new JLabel("Registrar nueva categoria");
         tituloFormulario .setFont(new Font("Inter", Font.BOLD, 20));
         panelFormulario.add(tituloFormulario, gbc);
         
+        gbc.insets = new Insets(10, 10, 10, 10);
+        
         gbc.gridy = 1;
         lblnombre = new JLabel("Nombre: ");
+        lblnombre.setHorizontalAlignment(SwingConstants.LEFT);
         panelFormulario.add(lblnombre,gbc);
         
         gbc.gridy = 2;
@@ -130,6 +135,7 @@ public class CategoriaView extends JFrame{
         txtdescripcion.setPreferredSize(new Dimension(0,30));
         panelFormulario.add(txtdescripcion,gbc);
         
+        gbc.insets = new Insets(30, 10, 30, 10);
         gbc.gridy = 5;
         btnRegistrar = new JButton("Registrar categoria");
         btnRegistrar.setBackground(new Color(171,239,255));

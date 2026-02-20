@@ -64,7 +64,7 @@ public final class ProductoView extends JFrame{
         gbc.insets = new Insets(20, 10, 20, 10);
         gbc.anchor = GridBagConstraints.CENTER;
         
-        tituloPrincipal = new JLabel("Gestión de productos",SwingConstants.CENTER);
+        tituloPrincipal = new JLabel("Gestión de productos");
         tituloPrincipal.setFont(new Font("Inter", Font.BOLD, 24));
         panel.add(tituloPrincipal, gbc);
         
@@ -112,7 +112,7 @@ public final class ProductoView extends JFrame{
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 3;
-        gbc.insets = new Insets(30, 10, 30, 10); // margen 
+        gbc.insets = new Insets(30, 10, 30, 10);
         
         tituloSecundario = new JLabel("Registrar nuevo producto");
         tituloSecundario.setFont(new Font("Inter", Font.BOLD, 20));
@@ -120,7 +120,7 @@ public final class ProductoView extends JFrame{
        
         gbc.gridwidth = 1;
         gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(10, 10, 10, 10); // margen 
+        gbc.insets = new Insets(10, 10, 10, 10);
         
         gbc.gridx=0;
         gbc.gridy=1;
@@ -207,7 +207,7 @@ public final class ProductoView extends JFrame{
         gbc.gridx=1;
         gbc.gridy=6;
         cbxCategoria = new JComboBox<Categoria>();
-        cbxCategoria.setPreferredSize(new Dimension(200,30));
+        cbxCategoria.setPreferredSize(new Dimension(150,30));
         panelSecundario.add(cbxCategoria, gbc);
         
         gbc.gridy=7;
@@ -264,7 +264,7 @@ public final class ProductoView extends JFrame{
        Categoria categSeleccionada = (Categoria) cbxCategoria.getSelectedItem();
        if(categSeleccionada == null || categSeleccionada.getId()==0){
            JOptionPane.showMessageDialog(null, "Por favor, seleccione una categoría válida");
-           return; // Detiene la ejecución si no hay selección válida
+           return;
        }
            
        Producto producto = new Producto();
@@ -296,7 +296,7 @@ public final class ProductoView extends JFrame{
         
         if (this.listaActual == null || filaSeleccionada >= this.listaActual.size()) {
             JOptionPane.showMessageDialog(this, "Error: La lista de datos no está sincronizada.");
-            ejecutarLista(); // Intentamos recargar para solucionar el problema
+            ejecutarLista();
             return;
         }
         

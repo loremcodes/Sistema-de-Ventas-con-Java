@@ -17,7 +17,7 @@ public class SistemaVentas {
         /*UsuarioView usuario = new UsuarioView();
         usuario.setVisible(true);*/
         
-        CategoriaView producto = new CategoriaView();
+        ProductoView producto = new ProductoView();
         producto.setVisible(true);
         
         /*VentaView venta = new VentaView();
