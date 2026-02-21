@@ -197,7 +197,7 @@ public class UsuarioView extends JFrame {
         gbc.insets = new Insets(30, 10, 30, 10);
         panelFormulario.add(btnRegistrar, gbc);
        
-       btnRegistrar.addActionListener(e -> ejecutarBtnRegistrar());
+        btnRegistrar.addActionListener(e -> ejecutarBtnRegistrar());
         this.add(panelFormulario, BorderLayout.NORTH);
         
         return panelFormulario;
@@ -242,7 +242,7 @@ public class UsuarioView extends JFrame {
                 JOptionPane.showMessageDialog(null, "Usuario registrado");
                 limpiarCampos();
             }else{
-             JOptionPane.showMessageDialog(null, "Error al registrar usuario");
+                JOptionPane.showMessageDialog(null, "Error al registrar usuario");
             }
         }
        
@@ -289,6 +289,5 @@ public class UsuarioView extends JFrame {
             };
             modelo.addRow(fila);
         } 
-        
     }
 }

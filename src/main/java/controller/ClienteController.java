@@ -21,10 +21,10 @@ public class ClienteController {
             PreparedStatement prepareStatement = connection.prepareStatement(sql)){
             
             prepareStatement.setString(1, cliente.getNombres());
-            prepareStatement.setString(1, cliente.getApellidoPaterno());
-            prepareStatement.setString(1, cliente.getApellidoMaterno());
-            prepareStatement.setString(1, cliente.getDNI());
-            prepareStatement.setString(1, cliente.getCelular());
+            prepareStatement.setString(2, cliente.getApellidoPaterno());
+            prepareStatement.setString(3, cliente.getApellidoMaterno());
+            prepareStatement.setString(4, cliente.getDNI());
+            prepareStatement.setString(5, cliente.getCelular());
             
             return prepareStatement.executeUpdate() > 0;
             
@@ -51,7 +51,7 @@ public class ClienteController {
     }
     public List<Cliente> visualizarLista(){
         List<Cliente> listaClientes = new ArrayList();
-        String sql = "SELECT nombres, apellido_paterno, apellido_materno, dni, celular FROM cliente";
+        String sql = "SELECT * FROM cliente ";
         
         try(Connection connection = conexion.establecer();
             PreparedStatement prepareStatement = connection.prepareStatement(sql);){
