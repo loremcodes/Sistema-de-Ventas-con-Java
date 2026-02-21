@@ -1,21 +1,23 @@
 
 package model;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 public class Venta {
     private int id;
     private String tipoComprobante;
     private String num_comprobante;
-    private Timestamp fecha_venta;
+    private LocalDateTime fecha_venta;
     private double total; 
     private String metodoPago;
     private double montoRecibido;
     private double vuelto;
     private Cliente cliente;
     private Usuario usuario;
+    private int estadoVenta;
 
-    public Venta(int id, String tipoComprobante, String num_comprobante, Timestamp fecha_venta, double total, String metodoPago, double montoRecibido, double vuelto, Cliente cliente, Usuario usuario) {
+    public Venta(){}
+    public Venta(int id, String tipoComprobante, String num_comprobante, LocalDateTime fecha_venta, double total, String metodoPago, double montoRecibido, double vuelto, Cliente cliente, Usuario usuario, int estadoVenta) {
         this.id = id;
         this.tipoComprobante = tipoComprobante;
         this.num_comprobante = num_comprobante;
@@ -26,6 +28,7 @@ public class Venta {
         this.vuelto = vuelto;
         this.cliente = cliente;
         this.usuario = usuario;
+        this.estadoVenta = estadoVenta;
     }
 
     public int getId() {
@@ -34,10 +37,10 @@ public class Venta {
     public String getTipoComprobante() {
         return tipoComprobante;
     }
-    public String getNum_comprobante() {
+    public String getNumComprobante() {
         return num_comprobante;
     }
-    public Timestamp getFecha_venta() {
+    public LocalDateTime getFechaVenta() {
         return fecha_venta;
     }
     public double getTotal() {
@@ -58,17 +61,20 @@ public class Venta {
     public Usuario getUsuario() {
         return usuario;
     }
-
+    public int getEstadoVenta() {
+        return estadoVenta;
+    }
+    
     public void setId(int id) {
         this.id = id;
     }
     public void setTipoComprobante(String tipoComprobante) {
         this.tipoComprobante = tipoComprobante;
     }
-    public void setNum_comprobante(String num_comprobante) {
+    public void setNumComprobante(String num_comprobante) {
         this.num_comprobante = num_comprobante;
     }
-    public void setFecha_venta(Timestamp fecha_venta) {
+    public void setFechaVenta(LocalDateTime fecha_venta) {
         this.fecha_venta = fecha_venta;
     }
     public void setTotal(double total) {
@@ -88,6 +94,9 @@ public class Venta {
     }
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
+    }
+    public void setEstadoVenta(int estadoVenta) {
+        this.estadoVenta = estadoVenta;
     }
     
     
