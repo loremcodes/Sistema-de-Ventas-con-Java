@@ -25,7 +25,7 @@ import model.Cliente;
 import model.Usuario;
 
 public class ClienteView extends JFrame {
-    private JPanel panel, panelFormulario;
+    private JPanel panel, panelSecundario;
     private JLabel titulo, tituloFormulario, lblnombres, lblapellidoPaterno, lblapellidoMaterno, lbldni, lblcelular;
     private JTextField txtnombres, txtapellidoPaterno, txtapellidoMaterno, txtdni, txtcelular;
     private JButton btnFormulario, btnRegistrar, btnEliminar;
@@ -101,8 +101,8 @@ public class ClienteView extends JFrame {
        this.add(panel); 
     }
     public JPanel panelFormulario(){
-        panelFormulario = new JPanel();
-        panelFormulario.setLayout(new GridBagLayout());
+        panelSecundario = new JPanel();
+        panelSecundario.setLayout(new GridBagLayout());
 
         GridBagConstraints gbc = new GridBagConstraints(); 
         gbc.gridx = 0; 
@@ -113,7 +113,7 @@ public class ClienteView extends JFrame {
         gbc.gridwidth = 3;
         tituloFormulario = new JLabel("Registrar nuevo cliente");
         tituloFormulario.setFont(new Font("Inter", Font.BOLD, 20));
-        panelFormulario.add(tituloFormulario, gbc);
+        panelSecundario.add(tituloFormulario, gbc);
         
         gbc.gridwidth = 1;
         gbc.anchor = GridBagConstraints.WEST;
@@ -122,57 +122,57 @@ public class ClienteView extends JFrame {
         gbc.gridx = 0;
         gbc.gridy = 1;
         lblnombres = new JLabel("Nombres: ");
-        panelFormulario.add(lblnombres, gbc);
+        panelSecundario.add(lblnombres, gbc);
         
         gbc.gridx = 1;
         gbc.gridy = 1;
         lblapellidoPaterno = new JLabel("Apellido paterno: ");
-        panelFormulario.add(lblapellidoPaterno, gbc);
+        panelSecundario.add(lblapellidoPaterno, gbc);
         
         gbc.gridx = 2;
         gbc.gridy = 1;
         lblapellidoMaterno = new JLabel("Apellido materno: ");
-        panelFormulario.add(lblapellidoMaterno, gbc);
+        panelSecundario.add(lblapellidoMaterno, gbc);
             
         gbc.gridx = 0;
         gbc.gridy = 2;
         txtnombres = new JTextField(15);
         txtnombres.setPreferredSize(new Dimension(0,30));
-        panelFormulario.add(txtnombres, gbc);
+        panelSecundario.add(txtnombres, gbc);
         
         gbc.gridx = 1;
         gbc.gridy = 2;
         txtapellidoPaterno = new JTextField(15);
         txtapellidoPaterno.setPreferredSize(new Dimension(0,30));
-        panelFormulario.add(txtapellidoPaterno, gbc);
+        panelSecundario.add(txtapellidoPaterno, gbc);
         
         gbc.gridx = 2;
         gbc.gridy = 2;
         txtapellidoMaterno = new JTextField(15);
         txtapellidoMaterno.setPreferredSize(new Dimension(0,30));
-        panelFormulario.add(txtapellidoMaterno, gbc);
+        panelSecundario.add(txtapellidoMaterno, gbc);
          
         gbc.gridx = 0;
         gbc.gridy = 3;
         lbldni = new JLabel("N° DNI: ");
-        panelFormulario.add(lbldni, gbc);
+        panelSecundario.add(lbldni, gbc);
         
         gbc.gridx = 1;
         gbc.gridy = 3;
         lblcelular = new JLabel("Celular: ");
-        panelFormulario.add(lblcelular, gbc);
+        panelSecundario.add(lblcelular, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 4;
         txtdni = new JTextField(15);
         txtdni.setPreferredSize(new Dimension(0,30));
-        panelFormulario.add(txtdni, gbc);
+        panelSecundario.add(txtdni, gbc);
         
         gbc.gridx = 1;
         gbc.gridy = 4;
         txtcelular = new JTextField(15);
         txtcelular.setPreferredSize(new Dimension(0,30));
-        panelFormulario.add(txtcelular, gbc);
+        panelSecundario.add(txtcelular, gbc);
         
         gbc.gridx = 1;
         gbc.gridy = 5;
@@ -180,12 +180,12 @@ public class ClienteView extends JFrame {
         btnRegistrar.setBackground(new Color(171,239,255));
         btnRegistrar.setPreferredSize(new Dimension(150, 30));
         gbc.insets = new Insets(30, 10, 30, 10);
-        panelFormulario.add(btnRegistrar, gbc);
+        panelSecundario.add(btnRegistrar, gbc);
        
         btnRegistrar.addActionListener(e -> ejecutarBtnRegistrar());
-        this.add(panelFormulario, BorderLayout.NORTH);
+        this.add(panelSecundario, BorderLayout.NORTH);
         
-        return panelFormulario;
+        return panelSecundario;
     }
     public void limpiarCampos(){
         txtnombres.setText(""); txtapellidoPaterno.setText(""); txtapellidoMaterno.setText(""); txtdni.setText(""); txtcelular.setText("");
