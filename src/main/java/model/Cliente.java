@@ -56,4 +56,9 @@ public class Cliente {
     public void setCelular(String celular) {
         this.celular = celular;
     }
+    
+    @Override
+    public String toString() {
+        return this.nombres + " "+this.apellido_paterno;
+    }
 }

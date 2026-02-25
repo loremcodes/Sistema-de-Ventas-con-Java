@@ -1,6 +1,10 @@
 
 package view;
 
+import controller.CategoriaController;
+import controller.ClienteController;
+import controller.DetalleVentaController;
+import controller.ProductoController;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -9,38 +13,47 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+import model.Categoria;
 import model.Cliente;
+import model.DetalleVenta;
 import model.Producto;
 
 public final class VentaView extends JFrame {
     private JPanel panel, panelSecundario;
     private JLabel titulo, tituloSecundario, lbltipoComprobante, lblnumComprobante, lblfechaVenta, lblcliente, lbltotal, lblmetodoPago, lblmontoRecibido, lblvuelto, lblcantidad, lblsubtotal, lblprecioVenta, lblproducto;
     private JTextField txtmontoRecibido, txtnumComprobante, txtvuelto, txtotal, txtfecha, txtcantidad, txtprecioVenta, txtsubtotal;
-    private JComboBox cbxtipoComprobante, cbxmetodoPago, cbxcliente, cbxproducto;
+    private JComboBox<String> cbxtipoComprobante;
+    private JComboBox<String> cbxmetodoPago;
+    private JComboBox<Cliente> cbxcliente; 
+    private JComboBox<Producto> cbxproducto;
     private JButton btnEliminar, btnFormulario, btnAgregarCompra, btnRegistrar, btnDetalleVenta;
-    private DefaultTableModel modelo;
-    private JTable tabla;
-   
-    
-    private JScrollPane scroll;
+    private DefaultTableModel modelo, modeloDetalle;
+    private JTable tabla, tablaDetalle;
+    private JScrollPane scroll, scrollDetalle;
     private JSeparator separador;
+    private DetalleVentaController controlDetalleVenta;
+    private List<DetalleVenta> listaDetalle = new ArrayList();
     
     public VentaView(){
         configurarFrame();
         initComponentes();
         eventos();
+   
     }
     public void configurarFrame(){
         setTitle("Sistema de ventas | Gestión de ventas");
@@ -149,8 +162,8 @@ public final class VentaView extends JFrame {
         
         gbc.gridx=0;
         gbc.gridy=2;
-        String[] tiposComprobantes = {"Boleta", "Factura", "Tocket"};
-        JComboBox<String> cbxtipoComprobante = new JComboBox(tiposComprobantes);
+        String[] tiposComprobantes = {"Boleta", "Factura", "Ticket"};
+        cbxtipoComprobante = new JComboBox(tiposComprobantes);
         cbxtipoComprobante.setPreferredSize(new Dimension(150,30));
         panelSecundario.add(cbxtipoComprobante, gbc);
         
@@ -173,7 +186,7 @@ public final class VentaView extends JFrame {
         
         gbc.gridx=3;
         gbc.gridy=2;
-        cbxcliente = new JComboBox<Cliente>();
+        cbxcliente = new JComboBox<>();
         cbxcliente.setPreferredSize(new Dimension(150,30));
         AutoCompleteDecorator.decorate(cbxcliente);
         panelSecundario.add(cbxcliente, gbc);
@@ -210,7 +223,7 @@ public final class VentaView extends JFrame {
            
         gbc.gridx = 0;          
         gbc.gridy = 5;
-        cbxproducto = new JComboBox<Producto>();
+        cbxproducto = new JComboBox<>();
         cbxproducto.setPreferredSize(new Dimension(0,30));
         AutoCompleteDecorator.decorate(cbxproducto);
         panelSecundario.add(cbxproducto, gbc);
@@ -247,11 +260,11 @@ public final class VentaView extends JFrame {
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weighty = 1.0;
         String[] columnas = {"N°", "Cantidad", "Producto", "Precio", "Subtotal"};
-        modelo = new DefaultTableModel(columnas,0);
-        tabla = new JTable(modelo);
-        scroll = new JScrollPane(tabla);
-        scroll.setPreferredSize(new Dimension(tabla.getPreferredSize().width, 200));
-        panelSecundario.add(scroll, gbc);
+        modeloDetalle = new DefaultTableModel(columnas,0);
+        tablaDetalle = new JTable(modeloDetalle);
+        scrollDetalle = new JScrollPane(tablaDetalle);
+        scrollDetalle.setPreferredSize(new Dimension(tablaDetalle.getPreferredSize().width, 200));
+        panelSecundario.add(scrollDetalle, gbc);
         
         separador = new JSeparator();
         gbc.gridwidth = 4; 
@@ -323,7 +336,41 @@ public final class VentaView extends JFrame {
         btnRegistrar.setBackground(new Color(171,239,255));
         panelSecundario.add(btnRegistrar, gbc);
         
+        llenarComboCliente();
+        llenarComboProducto();
+        
+        /*Eventos para las variables JComboBox----------------------------------*/
+        cbxproducto.addActionListener(e -> {
+            Producto p = (Producto) cbxproducto.getSelectedItem(); 
+            if (p != null) txtprecioVenta.setText(String.valueOf(p.getPrecioVenta()));
+        });
+        /*----------------------------------------------------------------------*/
+        
+        btnAgregarCompra.addActionListener(e-> ejecutarBtnAgregarCompra());
+        
         return panelSecundario;
+    }
+    private void llenarComboCliente(){
+        cbxcliente.removeAllItems();
+
+        ClienteController cliente= new ClienteController();
+        List<Cliente> lista = cliente.visualizarLista();
+      
+        for(Cliente cli: lista){
+           cbxcliente.addItem(cli);
+        }
+        cbxcliente.setSelectedIndex(-1);
+    }
+    private void llenarComboProducto(){
+        cbxproducto.removeAllItems();
+        
+        ProductoController producto = new ProductoController();
+        List<Producto> lista = producto.visualizarLista();
+        
+        for(Producto pro : lista){
+            cbxproducto.addItem(pro);
+        }
+        cbxproducto.setSelectedIndex(-1);
     }
     private void eventos(){
         btnFormulario.addActionListener(e -> {
@@ -335,10 +382,49 @@ public final class VentaView extends JFrame {
             dialogo.setVisible(true);
         });
     }
+    private void ejecutarBtnAgregarCompra(){
+        String texto = ((JTextField) cbxproducto.getEditor().getEditorComponent()).getText();
+        if(texto.trim().trim().isEmpty() || txtcantidad.getText().trim().isEmpty()){
+            JOptionPane.showMessageDialog(null, "Complete todos los campos del formulario");
+        }else{
+            Producto prod = (Producto) cbxproducto.getSelectedItem();
+            double cant = Double.parseDouble(txtcantidad.getText());
+            double precioVenta = Double.parseDouble(txtprecioVenta.getText());
+        
+            double subtotal = cant*precioVenta;
+            
+            /*Vamos guardando los datos que tenemos en nuestro objeto*/
+            DetalleVenta detalle = new DetalleVenta();
+            
+            detalle.setPrecioVenta(Double.parseDouble(txtprecioVenta.getText()));
+            detalle.setCantidad(Double.parseDouble(txtcantidad.getText()));
+            detalle.setSubtotal(subtotal);
+            
+            listaDetalle.add(detalle);
+            /*--------------------------------------------------------*/
+            
+            int item = 1;
+            
+            Object[] fila = new Object[5];
+            fila[0] = item;
+            fila[1] = cant;
+            fila[2] = prod;
+            fila[3] = precioVenta;
+            fila[4] = subtotal;
+            
+            modeloDetalle.addRow(fila);
+            item++;
+            limpiarCamposDetalle();
+        }
+    }
     private void ejecutarBtnRegistrar(){
         
     }
     private void ejecutarBtnAnular(){
         
+    }
+    private void limpiarCamposDetalle(){
+        cbxproducto.setSelectedIndex(-1);
+        txtcantidad.setText("");
     }
 }
