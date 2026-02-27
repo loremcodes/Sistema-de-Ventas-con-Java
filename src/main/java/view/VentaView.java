@@ -5,6 +5,7 @@ import controller.CategoriaController;
 import controller.ClienteController;
 import controller.DetalleVentaController;
 import controller.ProductoController;
+import controller.VentaController;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -12,7 +13,9 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JButton;
@@ -32,6 +35,7 @@ import model.Categoria;
 import model.Cliente;
 import model.DetalleVenta;
 import model.Producto;
+import model.Venta;
 
 public final class VentaView extends JFrame {
     private JPanel panel, panelSecundario;
@@ -41,15 +45,19 @@ public final class VentaView extends JFrame {
     private JComboBox<String> cbxmetodoPago;
     private JComboBox<Cliente> cbxcliente; 
     private JComboBox<Producto> cbxproducto;
-    private JButton btnEliminar, btnFormulario, btnAgregarCompra, btnRegistrar, btnDetalleVenta;
+    private JButton btnEliminar, btnFormulario, btnAgregarCompra, btnRegistrar, btnDetalleVenta, btnEliminarCompra, btnModificarCompra;
     private DefaultTableModel modelo, modeloDetalle;
     private JTable tabla, tablaDetalle;
     private JScrollPane scroll, scrollDetalle;
     private JSeparator separador;
     private DetalleVentaController controlDetalleVenta;
     private List<DetalleVenta> listaDetalle = new ArrayList();
+    private VentaController controlVenta;
+    private double totalPagar = 0.0;
     
     public VentaView(){
+        controlVenta = new VentaController();
+        
         configurarFrame();
         initComponentes();
         eventos();
@@ -247,6 +255,22 @@ public final class VentaView extends JFrame {
         
         gbc.gridwidth = 4; 
         
+        gbc.gridx = 1;
+        gbc.gridy = 6;
+        btnModificarCompra = new JButton();
+        btnModificarCompra.setText("Modificar");
+        btnModificarCompra.setPreferredSize(new Dimension(150,30));
+        btnModificarCompra.setBackground(new Color(255,191,102));
+        panelSecundario.add(btnModificarCompra, gbc);
+        
+        gbc.gridx = 2;
+        gbc.gridy = 6;
+        btnEliminarCompra = new JButton();
+        btnEliminarCompra.setText("Eliminar");
+        btnEliminarCompra.setPreferredSize(new Dimension(150,30));
+        btnEliminarCompra.setBackground(new Color(255,100,100));
+        panelSecundario.add(btnEliminarCompra, gbc);
+        
         gbc.gridx = 3;
         gbc.gridy = 6;
         btnAgregarCompra = new JButton();
@@ -254,7 +278,7 @@ public final class VentaView extends JFrame {
         btnAgregarCompra.setPreferredSize(new Dimension(150,30));
         btnAgregarCompra.setBackground(new Color(255,239,153));
         panelSecundario.add(btnAgregarCompra, gbc);
-        
+
         gbc.gridx = 0;          
         gbc.gridy = 7;   
         gbc.fill = GridBagConstraints.BOTH;
@@ -347,7 +371,9 @@ public final class VentaView extends JFrame {
         /*----------------------------------------------------------------------*/
         
         btnAgregarCompra.addActionListener(e-> ejecutarBtnAgregarCompra());
-        
+        btnEliminarCompra.addActionListener(e -> ejecutarBtnEliminarCompra());
+        btnModificarCompra.addActionListener(e -> ejecutarBtnModificarCompra());
+        btnRegistrar.addActionListener(e -> ejecutarBtnRegistrar());
         return panelSecundario;
     }
     private void llenarComboCliente(){
@@ -376,6 +402,14 @@ public final class VentaView extends JFrame {
         btnFormulario.addActionListener(e -> {
             JDialog dialogo = new JDialog(this,"Sistema de ventas | Registrar venta", true);
             dialogo.add(panelFormulario());
+            
+            String numComprobante = obtenerNumeroComprobante();
+            txtnumComprobante.setText(numComprobante);
+            
+            LocalDateTime ahora = LocalDateTime.now();
+            DateTimeFormatter formatoCortes = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+            txtfecha.setText(ahora.format(formatoCortes));
+            
             dialogo.pack(); 
             dialogo.setLocationRelativeTo(this); 
             dialogo.setResizable(false);
@@ -384,15 +418,15 @@ public final class VentaView extends JFrame {
     }
     private void ejecutarBtnAgregarCompra(){
         String texto = ((JTextField) cbxproducto.getEditor().getEditorComponent()).getText();
+        
         if(texto.trim().trim().isEmpty() || txtcantidad.getText().trim().isEmpty()){
             JOptionPane.showMessageDialog(null, "Complete todos los campos del formulario");
         }else{
             Producto prod = (Producto) cbxproducto.getSelectedItem();
             double cant = Double.parseDouble(txtcantidad.getText());
             double precioVenta = Double.parseDouble(txtprecioVenta.getText());
-        
-            double subtotal = cant*precioVenta;
-            
+       
+            double subtotal = calcularSubtotal(cant, precioVenta);
             /*Vamos guardando los datos que tenemos en nuestro objeto*/
             DetalleVenta detalle = new DetalleVenta();
             
@@ -414,11 +448,69 @@ public final class VentaView extends JFrame {
             
             modeloDetalle.addRow(fila);
             item++;
+            
+            calcularTotalPagar();
             limpiarCamposDetalle();
+        }
+    }
+    private void ejecutarBtnEliminarCompra(){
+        int filaSeleccionada = tablaDetalle.getSelectedRow();
+        
+        if (filaSeleccionada != -1) {
+            modeloDetalle.removeRow(filaSeleccionada);
+            listaDetalle.remove(filaSeleccionada);    // Borra el objeto de tu lista (deben estar sincronizadas)
+            calcularTotalPagar();        // Recalcula el total
+        }else{
+            JOptionPane.showMessageDialog(null, "Seleccione una fila para eliminar");
+        } 
+    }
+    private void ejecutarBtnModificarCompra(){
+        int filaSeleccionada = tablaDetalle.getSelectedRow();
+
+        if(filaSeleccionada!=-1){
+            String nuevaCant = JOptionPane.showInputDialog(this, "Ingrese cantidad", "Modificar cantidad", JOptionPane.QUESTION_MESSAGE);
+            if(nuevaCant!=null){
+                try{
+                    double converCant = Double.parseDouble(nuevaCant);
+                    modeloDetalle.setValueAt(converCant, filaSeleccionada, 1);
+                
+                    double precioV = (double) modeloDetalle.getValueAt(filaSeleccionada, 3);
+                    Double subtotalActualizado = calcularSubtotal(converCant, precioV);
+                
+                    modeloDetalle.setValueAt(subtotalActualizado, filaSeleccionada, 4);
+                
+                    calcularTotalPagar();
+                }catch(NumberFormatException e){
+                    JOptionPane.showMessageDialog(null, "Por favor ingresar un número válido");
+                }
+            }
+        }else{
+            JOptionPane.showMessageDialog(null, "Seleccione la fila a modificar");
         }
     }
     private void ejecutarBtnRegistrar(){
         
+        String tipoComprobante = ((JTextField) cbxtipoComprobante.getEditor().getEditorComponent()).getText();
+        Cliente cliente = (Cliente) cbxcliente.getSelectedItem();
+        Producto producto = (Producto) cbxproducto.getSelectedItem();
+        String metodoPago = ((JTextField) cbxmetodoPago.getEditor().getEditorComponent()).getText();
+        
+        Venta venta = new Venta();
+        venta.setTipoComprobante(tipoComprobante);
+        venta.setNumComprobante(txtnumComprobante.getText());
+        venta.setFechaVenta(LocalDateTime.now());
+        venta.setCliente(cliente);
+        venta.setTotal(totalPagar);
+        venta.setMetodoPago(metodoPago);
+        venta.setMontoRecibido(Double.parseDouble(txtmontoRecibido.getText()));
+        venta.setVuelto(Double.parseDouble(txtvuelto.getText()));
+        
+        if(controlVenta.registrarVenta(venta)){
+            JOptionPane.showMessageDialog(null, "Venta registrado con éxito");
+        }else{
+            JOptionPane.showMessageDialog(null, "Error al registrar venta");
+        }
+         
     }
     private void ejecutarBtnAnular(){
         
@@ -426,5 +518,27 @@ public final class VentaView extends JFrame {
     private void limpiarCamposDetalle(){
         cbxproducto.setSelectedIndex(-1);
         txtcantidad.setText("");
+    }
+    private String obtenerNumeroComprobante(){
+        String ultimoNum = controlVenta.obtenerUltimoComprobante();
+        
+        int numeroActual = Integer.parseInt(ultimoNum);
+        int siguienteNumero = numeroActual + 1;
+        
+        return String.valueOf(siguienteNumero);
+    }
+    private double calcularSubtotal(double cant, double precioV){
+        double subtotal = cant * precioV;
+        return subtotal;
+    }
+    private void calcularTotalPagar() {
+        this.totalPagar = 0;
+        for (int i = 0; i < tablaDetalle.getRowCount(); i++) {
+            totalPagar += (double) tablaDetalle.getValueAt(i, 4);
+        }
+        txtotal.setText("S/. " + totalPagar);
+    }
+    private void calcularVuelto(){
+        
     }
 }

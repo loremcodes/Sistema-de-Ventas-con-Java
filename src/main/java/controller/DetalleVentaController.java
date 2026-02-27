@@ -59,6 +59,5 @@ public class DetalleVentaController {
              System.out.println("Error al obtener lista de Detalle Ventas: "+e.getMessage());
          }
          return listaDetalles;
-    }
-    
+    } 
 }

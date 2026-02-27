@@ -92,4 +92,23 @@ public class VentaController {
         }
         return listaVentas;
     }
+    public String obtenerUltimoComprobante(){
+        String sql = "SELECT MAX(num_comprobante) FROM venta";
+        
+        try (Connection connection = conexion.establecer(); 
+            PreparedStatement prepareStatement = connection.prepareStatement(sql);
+            
+            ResultSet resultSet = prepareStatement.executeQuery()) {
+        
+            if (resultSet.next()) {
+                String ultimo = resultSet.getString(1);
+                if (ultimo != null) {
+                    return ultimo;
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al obtener último comprobante: " + e.getMessage());
+        }
+        return "000000";
+    }
 }
