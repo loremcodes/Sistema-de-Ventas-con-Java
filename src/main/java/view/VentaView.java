@@ -38,30 +38,32 @@ import model.Producto;
 import model.Venta;
 
 public final class VentaView extends JFrame {
-    private JPanel panel, panelSecundario;
-    private JLabel titulo, tituloSecundario, lbltipoComprobante, lblnumComprobante, lblfechaVenta, lblcliente, lbltotal, lblmetodoPago, lblmontoRecibido, lblvuelto, lblcantidad, lblsubtotal, lblprecioVenta, lblproducto;
+    private JPanel panel, panelSecundario, panelDetalle;
+    private JLabel titulo, tituloSecundario, tituloDetalles, lbltipoComprobante, lblnumComprobante, lblfechaVenta, lblcliente, lbltotal, lblmetodoPago, lblmontoRecibido, lblvuelto, lblcantidad, lblsubtotal, lblprecioVenta, lblproducto;
     private JTextField txtmontoRecibido, txtnumComprobante, txtvuelto, txtotal, txtfecha, txtcantidad, txtprecioVenta, txtsubtotal;
     private JComboBox<String> cbxtipoComprobante;
     private JComboBox<String> cbxmetodoPago;
     private JComboBox<Cliente> cbxcliente; 
     private JComboBox<Producto> cbxproducto;
-    private JButton btnEliminar, btnFormulario, btnAgregarCompra, btnRegistrar, btnDetalleVenta, btnEliminarCompra, btnModificarCompra;
-    private DefaultTableModel modelo, modeloDetalle;
-    private JTable tabla, tablaDetalle;
-    private JScrollPane scroll, scrollDetalle;
+    private JButton btnAnular, btnFormulario, btnAgregarCompra, btnRegistrarVenta, btnVerDetalleVenta, btnEliminarCompra, btnModificarCompra;
+    private DefaultTableModel modelo, modeloDetalle, modeloVerDetalle;
+    private JTable tabla, tablaDetalle, tablaVerDetalle;
+    private JScrollPane scroll, scrollDetalle, scrollVerDetalle;
     private JSeparator separador;
     private DetalleVentaController controlDetalleVenta;
     private List<DetalleVenta> listaDetalle = new ArrayList();
     private VentaController controlVenta;
     private double totalPagar = 0.0;
+    private List<Venta> listaVentas;
     
     public VentaView(){
         controlVenta = new VentaController();
+        controlDetalleVenta = new DetalleVentaController();
         
         configurarFrame();
         initComponentes();
         eventos();
-   
+        ejecutarLista();
     }
     public void configurarFrame(){
         setTitle("Sistema de ventas | Gestión de ventas");
@@ -91,19 +93,19 @@ public final class VentaView extends JFrame {
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.anchor = GridBagConstraints.WEST;
-        btnEliminar = new JButton("Anular venta");
-        btnEliminar.setBackground(new Color(255,100,100));
-        btnEliminar.setPreferredSize(new Dimension(200, 30));
-        panel.add(btnEliminar, gbc);
+        btnAnular = new JButton("Anular venta");
+        btnAnular.setBackground(new Color(255,100,100));
+        btnAnular.setPreferredSize(new Dimension(200, 30));
+        panel.add(btnAnular, gbc);
         
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.anchor = GridBagConstraints.CENTER;
-        btnDetalleVenta = new JButton("Ver detalle venta");
-        btnDetalleVenta.setBackground(new Color(255,229,138));
-        btnDetalleVenta.setPreferredSize(new Dimension(200, 30));
-        panel.add(btnDetalleVenta, gbc);
+        btnVerDetalleVenta = new JButton("Ver detalle venta");
+        btnVerDetalleVenta.setBackground(new Color(255,229,138));
+        btnVerDetalleVenta.setPreferredSize(new Dimension(200, 30));
+        panel.add(btnVerDetalleVenta, gbc);
         
         gbc.gridx = 9;
         gbc.gridy = 1;    
@@ -120,7 +122,7 @@ public final class VentaView extends JFrame {
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
-        String[] columnas = {"N°", "Tipo comprobante", "N° comprobante", "Fecha venta", "Cliente", "Total", "Método pago", "Monto recibido", "Vuelto", "Usuario"};
+        String[] columnas = {"N°", "Tipo comprobante", "N° comprobante", "Fecha venta", "Cliente", "Total", "Método pago", "Monto recibido", "Vuelto", "Usuario", "Estado"};
         modelo = new DefaultTableModel(columnas,0);
         tabla = new JTable(modelo);
         scroll = new JScrollPane(tabla);
@@ -354,11 +356,11 @@ public final class VentaView extends JFrame {
         gbc.gridy=11;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
-        btnRegistrar = new JButton();
-        btnRegistrar.setText("Registrar venta");
-        btnRegistrar.setPreferredSize(new Dimension(300,30));
-        btnRegistrar.setBackground(new Color(171,239,255));
-        panelSecundario.add(btnRegistrar, gbc);
+        btnRegistrarVenta = new JButton();
+        btnRegistrarVenta.setText("Registrar venta");
+        btnRegistrarVenta.setPreferredSize(new Dimension(300,30));
+        btnRegistrarVenta.setBackground(new Color(171,239,255));
+        panelSecundario.add(btnRegistrarVenta, gbc);
         
         llenarComboCliente();
         llenarComboProducto();
@@ -377,16 +379,39 @@ public final class VentaView extends JFrame {
             @Override
             public void keyReleased(java.awt.event.KeyEvent evt) {
             calcularVuelto();
-            txtmontoRecibido.addKeyListener(new java.awt.event.KeyAdapter() {
-    @Override
-    public void keyReleased(java.awt.event.KeyEvent evt) {
-        calcularVuelto();
-    }
-});}
+            }
         });
-        btnRegistrar.addActionListener(e -> ejecutarBtnRegistrar());
+        btnRegistrarVenta.addActionListener(e -> ejecutarBtnRegistrarVenta());
         
         return panelSecundario;
+    }
+    private JPanel panelVerDetalles(){
+        panelDetalle = new JPanel();
+        panelDetalle.setLayout(new GridBagLayout());
+        
+        GridBagConstraints gbc = new GridBagConstraints(); 
+        gbc.gridx = 0; 
+        gbc.gridy = 0; 
+        gbc.gridwidth = 10;
+        gbc.insets = new Insets(20, 10, 20, 10);
+        gbc.anchor = GridBagConstraints.CENTER;
+        
+        tituloDetalles = new JLabel("Detalle Venta");
+        tituloDetalles.setFont(new Font("Inter", Font.BOLD, 14));
+        panelDetalle.add( tituloDetalles, gbc);
+        
+        gbc.gridx = 0; 
+        gbc.gridy = 1; 
+        String[] columnas = {"N°", "Cantidad", "Producto", "Precio", "Subtotal"};
+        modeloVerDetalle = new DefaultTableModel(columnas,0);
+        tablaVerDetalle = new JTable(modeloVerDetalle);
+        scrollVerDetalle = new JScrollPane(tablaVerDetalle );
+        scrollVerDetalle.setPreferredSize(new Dimension(tablaVerDetalle .getPreferredSize().width, 200));
+        panelDetalle.add(scrollVerDetalle, gbc);
+        
+        ejecutarBtnVerDetalle(); 
+        
+        return panelDetalle;
     }
     private void llenarComboCliente(){
         cbxcliente.removeAllItems();
@@ -427,6 +452,40 @@ public final class VentaView extends JFrame {
             dialogo.setResizable(false);
             dialogo.setVisible(true);
         });
+        btnVerDetalleVenta.addActionListener(e -> {
+            JDialog dialogo = new JDialog(this,"Sistema de ventas | Detalle Venta", true);
+            dialogo.add(panelVerDetalles());
+            
+            dialogo.pack(); 
+            dialogo.setLocationRelativeTo(this); 
+            dialogo.setResizable(false);
+            dialogo.setVisible(true);
+        });
+        btnAnular.addActionListener(e -> ejecutarBtnAnular());
+    }
+    private void ejecutarLista(){
+        modelo.setRowCount(0);
+        int item=1;
+        this.listaVentas = controlVenta.visualizarLista();
+        
+        for (Venta venta: listaVentas) {
+            String estadoTexto = (venta.getEstadoVenta() == 1) ? "Activa" : "Anulada";
+            Object[] fila = {
+                item,
+                venta.getTipoComprobante(),
+                venta.getNumComprobante(),
+                venta.getFechaVenta(),
+                venta.getCliente(),
+                venta.getTotal(),
+                venta.getMetodoPago(),
+                venta.getMontoRecibido(),
+                venta.getVuelto(),
+                venta.getUsuario(),
+                estadoTexto,
+            };
+            modelo.addRow(fila);
+            item++;
+        } 
     }
     private void ejecutarBtnAgregarCompra(){
         String texto = ((JTextField) cbxproducto.getEditor().getEditorComponent()).getText();
@@ -439,7 +498,7 @@ public final class VentaView extends JFrame {
             double precioVenta = Double.parseDouble(txtprecioVenta.getText());
        
             double subtotal = calcularSubtotal(cant, precioVenta);
-            /*Vamos guardando los datos que tenemos en nuestro objeto*/
+            /*Vamos guardando temporalmente los datos que tenemos en nuestro objeto*/
             DetalleVenta detalle = new DetalleVenta();
             
             detalle.setCantidad(Double.parseDouble(txtcantidad.getText()));
@@ -504,7 +563,7 @@ public final class VentaView extends JFrame {
             JOptionPane.showMessageDialog(null, "Seleccione la fila a modificar");
         }
     }
-    private void ejecutarBtnRegistrar(){
+    private void ejecutarBtnRegistrarVenta(){
         if (listaDetalle.isEmpty()) {
             JOptionPane.showMessageDialog(this, "No hay productos agregados a la compra");
             return;
@@ -536,8 +595,53 @@ public final class VentaView extends JFrame {
             }
         }
     }
-    private void ejecutarBtnAnular(){
+    private void ejecutarBtnVerDetalle(){
+        int filaSeleccionada = tabla.getSelectedRow();
+        int item = 1;
+        if(filaSeleccionada != -1){
+            int idVenta = listaVentas.get(filaSeleccionada).getId();
+            
+            List<DetalleVenta> detalle = controlDetalleVenta.lista(idVenta);
+            modeloVerDetalle.setRowCount(0);
+            
+            for(DetalleVenta dv : detalle){
+                Object[] fila = {
+                    item,
+                    dv.getCantidad(),
+                    dv.getProducto(),
+                    dv.getPrecioVenta(),
+                    dv.getSubtotal()
+                };
+                modeloVerDetalle.addRow(fila);
+                item++;
+            }
+        }
         
+    }
+    private void ejecutarBtnAnular(){
+        int filaSeleccionada = tabla.getSelectedRow();
+        
+        if (filaSeleccionada != -1) {
+            int ventaId = listaVentas.get(filaSeleccionada).getId();
+
+            int respuesta = JOptionPane.showConfirmDialog(this, 
+                "¿Seguro que quieres anular la venta", 
+                "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+        
+            Venta venta = new Venta();
+            venta.setId(ventaId);
+        
+            if (respuesta == JOptionPane.YES_OPTION) {
+                if (controlVenta.anularVenta(venta)){
+                    JOptionPane.showMessageDialog(this, "Venta anulada con éxito");
+                    ejecutarLista();
+                }else {
+                    JOptionPane.showMessageDialog(this, "No se pudo eliminar la venta");
+                }
+            }
+        }else{
+            JOptionPane.showMessageDialog(this, "Por favor, selecciona una venta para anular");
+        }
     }
     private void limpiarCamposDetalle(){
         cbxproducto.setSelectedIndex(-1);

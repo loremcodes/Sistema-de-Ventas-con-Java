@@ -76,7 +76,7 @@ public class VentaController {
         try(Connection connection = conexion.establecer();
             PreparedStatement prepareStatement = connection.prepareStatement(sql)){
             
-            prepareStatement.setInt(1, venta.getEstadoVenta());
+            prepareStatement.setInt(1, venta.getId());
             
             return prepareStatement.executeUpdate() > 0;
             
@@ -88,7 +88,7 @@ public class VentaController {
     }
     public List<Venta> visualizarLista(){
         List<Venta> listaVentas = new ArrayList();
-        String sql = "SELECT v.id_venta, v.tipo_comprobante, v.num_comprobante, v.fecha_venta, concat(c.nombres,' ', c.apellido_paterno) AS cliente, v.total, v.metodo_pago, v.monto_recibido, v.vuelto, u.nombres AS usuario, v.estado_venta FROM venta v INNER JOIN cliente c ON v.id_cliente = c.id_cliente INNER JOIN  usuario u ON v.id_usuario = u.id_usuario";
+        String sql = "SELECT v.id_venta, v.tipo_comprobante, v.num_comprobante, v.fecha_venta, concat(c.nombres,' ', c.apellido_paterno) AS cliente, v.total, v.metodo_pago, v.monto_recibido, v.vuelto, u.nombres AS usuario, v.estado_venta FROM venta v LEFT JOIN cliente c ON v.id_cliente = c.id_cliente LEFT JOIN  usuario u ON v.id_usuario = u.id_usuario";
         
         try(Connection connection = conexion.establecer();
             PreparedStatement prepareStatement = connection.prepareStatement(sql)){
@@ -103,8 +103,7 @@ public class VentaController {
                     venta.setMetodoPago(resultSet.getString("metodo_pago"));
                     venta.setMontoRecibido(resultSet.getDouble("monto_recibido")); 
                     venta.setVuelto(resultSet.getDouble("vuelto"));
-                    venta.setEstadoVenta(resultSet.getInt("estado_venta"));
-                    
+                    venta.setTotal(resultSet.getDouble("total"));
                     Cliente cliente = new Cliente();
                     cliente.setNombres(resultSet.getString("cliente"));
                     venta.setCliente(cliente);
@@ -113,6 +112,7 @@ public class VentaController {
                     usuario.setNombres(resultSet.getString("usuario"));
                     venta.setUsuario(usuario);
                     
+                    venta.setEstadoVenta(resultSet.getInt("estado_venta"));
                     listaVentas.add(venta);
                 }
                 

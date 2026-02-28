@@ -10,6 +10,7 @@ import java.util.List;
 import model.Categoria;
 import model.DetalleVenta;
 import model.Producto;
+import model.Venta;
 import util.ConexionBD;
 
 public class DetalleVentaController {
@@ -35,14 +36,16 @@ public class DetalleVentaController {
             return false;
         }
     }
-    public List<DetalleVenta> lista(){
+    public List<DetalleVenta> lista(int idVenta){
          List<DetalleVenta> listaDetalles = new ArrayList();
          
-         String sql = "SELECT d.cantidad p.nombre_producto d.precio_venta FROM detalle_venta d INNER JOIN producto p ON d.id_producto = p.id_producto";
+         String sql = "SELECT d.cantidad, p.descripcion, d.precio_venta, d.subtotal FROM detalle_venta d INNER JOIN producto p ON d.id_producto = p.id_producto WHERE d.id_venta=?";
          try(Connection connection = conexion.establecer();
-             PreparedStatement prepareStatement = connection.prepareStatement(sql)){
+            PreparedStatement prepareStatement = connection.prepareStatement(sql)){
+            
+            prepareStatement.setInt(1, idVenta);
              
-             ResultSet resultSet = prepareStatement.executeQuery();
+            ResultSet resultSet = prepareStatement.executeQuery();
                 while(resultSet.next()){
                     DetalleVenta detalleVenta = new DetalleVenta();
                     detalleVenta.setCantidad(resultSet.getDouble("cantidad"));
