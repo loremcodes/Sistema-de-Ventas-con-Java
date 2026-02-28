@@ -373,7 +373,19 @@ public final class VentaView extends JFrame {
         btnAgregarCompra.addActionListener(e-> ejecutarBtnAgregarCompra());
         btnEliminarCompra.addActionListener(e -> ejecutarBtnEliminarCompra());
         btnModificarCompra.addActionListener(e -> ejecutarBtnModificarCompra());
+        txtmontoRecibido.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+            calcularVuelto();
+            txtmontoRecibido.addKeyListener(new java.awt.event.KeyAdapter() {
+    @Override
+    public void keyReleased(java.awt.event.KeyEvent evt) {
+        calcularVuelto();
+    }
+});}
+        });
         btnRegistrar.addActionListener(e -> ejecutarBtnRegistrar());
+        
         return panelSecundario;
     }
     private void llenarComboCliente(){
@@ -430,8 +442,9 @@ public final class VentaView extends JFrame {
             /*Vamos guardando los datos que tenemos en nuestro objeto*/
             DetalleVenta detalle = new DetalleVenta();
             
-            detalle.setPrecioVenta(Double.parseDouble(txtprecioVenta.getText()));
             detalle.setCantidad(Double.parseDouble(txtcantidad.getText()));
+            detalle.setProducto(prod);
+            detalle.setPrecioVenta(Double.parseDouble(txtprecioVenta.getText()));
             detalle.setSubtotal(subtotal);
             
             listaDetalle.add(detalle);
@@ -458,8 +471,8 @@ public final class VentaView extends JFrame {
         
         if (filaSeleccionada != -1) {
             modeloDetalle.removeRow(filaSeleccionada);
-            listaDetalle.remove(filaSeleccionada);    // Borra el objeto de tu lista (deben estar sincronizadas)
-            calcularTotalPagar();        // Recalcula el total
+            listaDetalle.remove(filaSeleccionada);    // Borrar el objeto de la lista (estan sincronizadas)
+            calcularTotalPagar();
         }else{
             JOptionPane.showMessageDialog(null, "Seleccione una fila para eliminar");
         } 
@@ -476,8 +489,11 @@ public final class VentaView extends JFrame {
                 
                     double precioV = (double) modeloDetalle.getValueAt(filaSeleccionada, 3);
                     Double subtotalActualizado = calcularSubtotal(converCant, precioV);
-                
                     modeloDetalle.setValueAt(subtotalActualizado, filaSeleccionada, 4);
+                    
+                    DetalleVenta actualizarDetalle = listaDetalle.get(filaSeleccionada);
+                    actualizarDetalle.setCantidad(converCant);
+                    actualizarDetalle.setSubtotal(subtotalActualizado);
                 
                     calcularTotalPagar();
                 }catch(NumberFormatException e){
@@ -489,28 +505,36 @@ public final class VentaView extends JFrame {
         }
     }
     private void ejecutarBtnRegistrar(){
-        
-        String tipoComprobante = ((JTextField) cbxtipoComprobante.getEditor().getEditorComponent()).getText();
-        Cliente cliente = (Cliente) cbxcliente.getSelectedItem();
-        Producto producto = (Producto) cbxproducto.getSelectedItem();
-        String metodoPago = ((JTextField) cbxmetodoPago.getEditor().getEditorComponent()).getText();
-        
-        Venta venta = new Venta();
-        venta.setTipoComprobante(tipoComprobante);
-        venta.setNumComprobante(txtnumComprobante.getText());
-        venta.setFechaVenta(LocalDateTime.now());
-        venta.setCliente(cliente);
-        venta.setTotal(totalPagar);
-        venta.setMetodoPago(metodoPago);
-        venta.setMontoRecibido(Double.parseDouble(txtmontoRecibido.getText()));
-        venta.setVuelto(Double.parseDouble(txtvuelto.getText()));
-        
-        if(controlVenta.registrarVenta(venta)){
-            JOptionPane.showMessageDialog(null, "Venta registrado con éxito");
+        if (listaDetalle.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No hay productos agregados a la compra");
+            return;
         }else{
-            JOptionPane.showMessageDialog(null, "Error al registrar venta");
+            String tipoComprobante = cbxtipoComprobante.getSelectedItem().toString();
+            Cliente cliente = (Cliente) cbxcliente.getSelectedItem();
+            String metodoPago = cbxmetodoPago.getSelectedItem().toString();
+            
+            
+            Venta venta = new Venta();
+            venta.setTipoComprobante(tipoComprobante);
+            venta.setNumComprobante(txtnumComprobante.getText());
+            venta.setFechaVenta(LocalDateTime.now());
+            venta.setCliente(cliente);
+            venta.setTotal(this.totalPagar);
+            venta.setMetodoPago(metodoPago);
+            
+            try {
+                venta.setMontoRecibido(Double.parseDouble(txtmontoRecibido.getText()));
+                venta.setVuelto(Double.parseDouble(txtvuelto.getText()));
+
+                if (controlVenta.registrarVenta(venta, listaDetalle)) {
+                    JOptionPane.showMessageDialog(this, "Venta N° " + venta.getNumComprobante() + " registrada.");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Error al guardar en la base de datos.");
+                }  
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Verifique los montos de pago y vuelto.");
+            }
         }
-         
     }
     private void ejecutarBtnAnular(){
         
@@ -539,6 +563,19 @@ public final class VentaView extends JFrame {
         txtotal.setText("S/. " + totalPagar);
     }
     private void calcularVuelto(){
-        
+        if (txtmontoRecibido.getText().trim().isEmpty()) {
+            txtvuelto.setText("0.00");
+            return;
+        }
+
+        double montoRecibido = Double.parseDouble(txtmontoRecibido.getText().trim());
+
+        double vuelto = montoRecibido - totalPagar;
+
+        if (vuelto < 0) {
+            txtvuelto.setText("Monto insuficiente");
+        } else {
+            txtvuelto.setText(String.format(java.util.Locale.US, "%.2f", vuelto));
+        }
     }
 }

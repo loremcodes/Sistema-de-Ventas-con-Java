@@ -5,10 +5,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import model.Categoria;
 import model.Cliente;
+import model.DetalleVenta;
 import model.Producto;
 import model.Usuario;
 import model.Venta;
@@ -17,26 +19,53 @@ import util.ConexionBD;
 public class VentaController {
     ConexionBD conexion = new ConexionBD();
     
-    public boolean registrarVenta(Venta venta){
-        String sql = "INSERT INTO venta(tipo_comprobante, num_comprobante, fecha_venta, total, metodo_pago, monto_recibido, vuelto, id_cliente, id_usuario) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    public boolean registrarVenta(Venta venta, List<DetalleVenta> lista){
+        String sql = "INSERT INTO venta(tipo_comprobante, num_comprobante, fecha_venta, total, metodo_pago, monto_recibido, vuelto, id_cliente) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
+        String sqldetalle = "INSERT INTO detalle_venta (cantidad, precio_venta, subtotal, id_venta, id_producto) VALUES (?,?,?,?,?)";
+        int idGenerado = 0;
         
-        try(Connection connection = conexion.establecer();
-            PreparedStatement prepareStatement = connection.prepareStatement(sql)){
+        try(Connection connection = conexion.establecer();){
             
-            prepareStatement.setString(1, venta.getTipoComprobante());
-            prepareStatement.setString(2, venta.getNumComprobante());
-            prepareStatement.setObject(3, venta.getFechaVenta());
-            prepareStatement.setDouble(4, venta.getTotal());
-            prepareStatement.setString(5, venta.getMetodoPago());
-            prepareStatement.setDouble(6, venta.getMontoRecibido());
-            prepareStatement.setDouble(7, venta.getVuelto());
-            prepareStatement.setInt(8, venta.getCliente().getId());
-            prepareStatement.setInt(9, venta.getUsuario().getId());
+            try(PreparedStatement prepareStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
+                connection.setAutoCommit(false);
             
-            return prepareStatement.executeUpdate()>0;
+                prepareStatement.setString(1, venta.getTipoComprobante());
+                prepareStatement.setString(2, venta.getNumComprobante());
+                prepareStatement.setObject(3, venta.getFechaVenta());
+                prepareStatement.setDouble(4, venta.getTotal());
+                prepareStatement.setString(5, venta.getMetodoPago());
+                prepareStatement.setDouble(6, venta.getMontoRecibido());
+                prepareStatement.setDouble(7, venta.getVuelto());
+                prepareStatement.setInt(8, venta.getCliente().getId());
             
+                prepareStatement.executeUpdate();
+            
+                ResultSet resultSet = prepareStatement.getGeneratedKeys();
+                if (resultSet.next()) {
+                    idGenerado = resultSet.getInt(1); 
+                }
+            }
+            
+            try( PreparedStatement prepareDetalle = connection.prepareStatement(sqldetalle);){
+                for(DetalleVenta dventa : lista){
+                    prepareDetalle.setDouble(1, dventa.getCantidad());
+                    prepareDetalle.setDouble(2, dventa.getPrecioVenta());
+                    prepareDetalle.setDouble(3, dventa.getSubtotal());
+                    prepareDetalle.setInt(4, idGenerado);
+                    prepareDetalle.setInt(5, dventa.getProducto().getId());
+                    prepareDetalle.addBatch();
+                }
+                
+                prepareDetalle.executeBatch();
+                connection.commit();
+                return true;
+            }catch(SQLException e){
+                connection.rollback(); // Si fallan los detalles, borramos la cabecera
+                throw e;
+            }
+
         }catch(SQLException e){
-            System.out.println("Error al registrar venta");
+            System.out.println("Error al registrar venta y detalles");
             e.printStackTrace();
             return false;
         } 
