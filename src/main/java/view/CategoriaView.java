@@ -45,7 +45,7 @@ public class CategoriaView extends JFrame{
     public void configurarFrame(){
         setTitle("Sistema de Ventas | Categorías");
         setSize(600,500);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         
         this.setLayout(new BorderLayout());
     }

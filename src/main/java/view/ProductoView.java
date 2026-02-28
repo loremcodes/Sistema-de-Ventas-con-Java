@@ -48,7 +48,7 @@ public final class ProductoView extends JFrame{
    private void configurarFrame(){
        setTitle("Sistema de Ventas | Gestión de productos");
        setSize(800,700);
-       setDefaultCloseOperation(EXIT_ON_CLOSE);
+       setDefaultCloseOperation(DISPOSE_ON_CLOSE);
        
        this.setLayout(new BorderLayout());
    }

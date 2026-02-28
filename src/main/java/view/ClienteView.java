@@ -45,7 +45,7 @@ public class ClienteView extends JFrame {
     public void configurarFrame(){
         setTitle("Sistema de Ventas | Gestión de clientes");
        setSize(600,700);
-       setDefaultCloseOperation(EXIT_ON_CLOSE);
+       setDefaultCloseOperation(DISPOSE_ON_CLOSE);
        
        this.setLayout(new BorderLayout());
     }

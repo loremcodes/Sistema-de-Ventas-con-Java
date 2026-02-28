@@ -12,6 +12,7 @@ import java.awt.Insets;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -38,15 +39,15 @@ public final class LoginView extends JFrame {
         this.setSize(600,700);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         
-        this.setLayout(new BorderLayout());
+        this.setLayout(new GridBagLayout());
     }
     private void initComponentes(){
         panel = new JPanel(new GridBagLayout());
         panel.setBackground(new Color(255, 255, 255));
+        panel.setPreferredSize(new Dimension(300,400));
         
         GridBagConstraints gbc = new GridBagConstraints(); 
         gbc.gridx = 0; 
-        
         gbc.gridy = 0; 
         gbc.insets = new Insets(10, 10, 10, 10); // margen 
         gbc.anchor = GridBagConstraints.CENTER;
@@ -104,6 +105,8 @@ public final class LoginView extends JFrame {
             InicioView inicio = new InicioView();
             inicio.setVisible(true);
             this.dispose();
+        }else{
+            JOptionPane.showMessageDialog(null, "Usuario y/o contraseña incorrecto");
         }
     }
 }

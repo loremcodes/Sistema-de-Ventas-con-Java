@@ -66,7 +66,7 @@ public final class VentaView extends JFrame {
     public void configurarFrame(){
         setTitle("Sistema de ventas | Gestión de ventas");
         setSize(800,700);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         
         this.setLayout(new BorderLayout());
     }

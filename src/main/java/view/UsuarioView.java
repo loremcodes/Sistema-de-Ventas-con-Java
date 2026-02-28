@@ -46,7 +46,7 @@ public class UsuarioView extends JFrame {
     private void configurarFrame(){
         setTitle("Sistemas de Ventas | Usuarios");
         this.setSize(600,700);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         
         this.setLayout(new BorderLayout());
     }
