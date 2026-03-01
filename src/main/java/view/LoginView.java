@@ -17,6 +17,8 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import model.Login;
+import model.Usuario;
 
 public final class LoginView extends JFrame {
     private JPanel panel;
@@ -98,10 +100,12 @@ public final class LoginView extends JFrame {
         contraseniatxt.addActionListener(e -> ejecutarLogin());
     }
     private void ejecutarLogin() {
-        String user = usuariotxt.getText();
-        String pass = new String(contraseniatxt.getPassword());
+        Usuario userLogueado = control.validacion(usuariotxt.getText(), new String(contraseniatxt.getPassword()));
         
-        if(control.validacion(user, pass)){
+        if(userLogueado != null){
+            
+            Login.setUsuario(userLogueado);
+            
             InicioView inicio = new InicioView();
             inicio.setVisible(true);
             this.dispose();

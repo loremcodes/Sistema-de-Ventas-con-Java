@@ -8,10 +8,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import model.Categoria;
 import model.Cliente;
 import model.DetalleVenta;
-import model.Producto;
 import model.Usuario;
 import model.Venta;
 import util.ConexionBD;
@@ -20,7 +18,7 @@ public class VentaController {
     ConexionBD conexion = new ConexionBD();
     
     public boolean registrarVenta(Venta venta, List<DetalleVenta> lista){
-        String sql = "INSERT INTO venta(tipo_comprobante, num_comprobante, fecha_venta, total, metodo_pago, monto_recibido, vuelto, id_cliente) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO venta(tipo_comprobante, num_comprobante, fecha_venta, total, metodo_pago, monto_recibido, vuelto, id_cliente, id_usuario) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)";
         String sqldetalle = "INSERT INTO detalle_venta (cantidad, precio_venta, subtotal, id_venta, id_producto) VALUES (?,?,?,?,?)";
         int idGenerado = 0;
         
@@ -37,6 +35,7 @@ public class VentaController {
                 prepareStatement.setDouble(6, venta.getMontoRecibido());
                 prepareStatement.setDouble(7, venta.getVuelto());
                 prepareStatement.setInt(8, venta.getCliente().getId());
+                prepareStatement.setInt(9, venta.getUsuario().getId());
             
                 prepareStatement.executeUpdate();
             

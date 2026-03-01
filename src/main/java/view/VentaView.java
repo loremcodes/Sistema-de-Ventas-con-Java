@@ -34,6 +34,7 @@ import javax.swing.table.DefaultTableModel;
 import model.Categoria;
 import model.Cliente;
 import model.DetalleVenta;
+import model.Login;
 import model.Producto;
 import model.Venta;
 
@@ -480,7 +481,7 @@ public final class VentaView extends JFrame {
                 venta.getMetodoPago(),
                 venta.getMontoRecibido(),
                 venta.getVuelto(),
-                venta.getUsuario(),
+                venta.getUsuario().getNombres(),
                 estadoTexto,
             };
             modelo.addRow(fila);
@@ -566,7 +567,6 @@ public final class VentaView extends JFrame {
     private void ejecutarBtnRegistrarVenta(){
         if (listaDetalle.isEmpty()) {
             JOptionPane.showMessageDialog(this, "No hay productos agregados a la compra");
-            return;
         }else{
             String tipoComprobante = cbxtipoComprobante.getSelectedItem().toString();
             Cliente cliente = (Cliente) cbxcliente.getSelectedItem();
@@ -580,6 +580,7 @@ public final class VentaView extends JFrame {
             venta.setCliente(cliente);
             venta.setTotal(this.totalPagar);
             venta.setMetodoPago(metodoPago);
+            venta.setUsuario(Login.getUsuario());
             
             try {
                 venta.setMontoRecibido(Double.parseDouble(txtmontoRecibido.getText()));
@@ -587,6 +588,7 @@ public final class VentaView extends JFrame {
 
                 if (controlVenta.registrarVenta(venta, listaDetalle)) {
                     JOptionPane.showMessageDialog(this, "Venta N° " + venta.getNumComprobante() + " registrada.");
+                    ejecutarLista();
                 } else {
                     JOptionPane.showMessageDialog(this, "Error al guardar en la base de datos.");
                 }  
